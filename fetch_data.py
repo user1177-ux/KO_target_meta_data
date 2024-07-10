@@ -4,18 +4,15 @@ import os
 from datetime import datetime, timedelta
 
 def fetch_data():
-    # Ваш access token и ad_account_id
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
-    # URL для запроса данных
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
 
     response = requests.get(url, params=params)
     data = response.json()
 
-    # Проверка на наличие ошибок в ответе
     if 'error' in data:
         print(f"Ошибка в ответе API: {data['error']}")
         return
@@ -61,7 +58,7 @@ def fetch_data():
                 language = 'RU'
             elif 'английский' in campaign_name.lower():
                 language = 'EN'
-            elif 'словенский' in campaign_name.lower():
+            elif 'словенский' в campaign_name.lower():
                 language = 'SLO'
             else:
                 language = 'UNKNOWN'

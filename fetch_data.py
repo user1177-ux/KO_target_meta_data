@@ -1,10 +1,10 @@
 import requests
 import csv
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
 def fetch_data():
-    # Ваш access token и ad_account_id
+    # Получаем значения секретов из переменных окружения
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
@@ -28,20 +28,11 @@ def fetch_data():
     result = []
     for campaign in data['data']:
         insight_url = f'https://graph.facebook.com/v20.0/{campaign["id"]}/insights'
-        
-        # Рассчитать даты
-        end_date = datetime.now() - timedelta(days=1)
-        start_date = datetime(1970, 1, 1)
-        
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
             'time_increment': 1,
-            'date_preset': 'maximum',
-            'time_range': {
-                'since': start_date.strftime('%Y-%m-%d'),
-                'until': end_date.strftime('%Y-%m-%d')
-            }
+            'date_preset': 'last_7d'
         }
         response = requests.get(insight_url, params=insight_params)
         insight_data = response.json()

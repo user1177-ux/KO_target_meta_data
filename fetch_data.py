@@ -7,6 +7,10 @@ def fetch_data():
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
+    # Диагностика: проверка значений переменных среды
+    print(f"Using access token: {access_token}")
+    print(f"Using ad account id: {ad_account_id}")
+
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
 
@@ -56,7 +60,7 @@ def fetch_data():
                 language = 'RU'
             elif 'английский' in campaign_name.lower():
                 language = 'EN'
-            elif 'словенский' in campaign_name.lower():
+            elif 'словенский' в campaign_name.lower():
                 language = 'SLO'
             else:
                 language = 'UNKNOWN'
@@ -75,7 +79,7 @@ def fetch_data():
 
     if result:
         keys = result[0].keys()
-        file_path = 'facebook_ads_data.csv'
+        file_path = 'facebook_ads_data_leads.csv'
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()

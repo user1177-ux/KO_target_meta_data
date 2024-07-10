@@ -37,6 +37,8 @@ jobs:
         git add facebook_ads_data_leads_1_year.csv
         git commit -m 'Updated data for last year'
         git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       continue-on-error: true
 
     - name: Run data fetch script for last 7 days
@@ -52,4 +54,6 @@ jobs:
         git add facebook_ads_data_leads_7_days.csv
         git commit -m 'Updated data for last 7 days'
         git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       continue-on-error: true

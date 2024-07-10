@@ -22,6 +22,11 @@ jobs:
       run: |
         pip install requests
 
+    - name: Ensure csv files exist
+      run: |
+        touch facebook_ads_data_leads_1_year.csv
+        touch facebook_ads_data_leads_7_days.csv
+
     - name: Run data fetch script for last year
       run: python fetch_data_last_year.py
       env:

@@ -1,11 +1,12 @@
 import requests
 import csv
-import json
+import os
 
-access_token = '<ACCESS_TOKEN>'
-ad_account_id = '<AD_ACCOUNT_ID>'
+# Получаем значения секретов из переменных окружения
+access_token = os.getenv('ACCESS_TOKEN')
+ad_account_id = os.getenv('AD_ACCOUNT_ID')
+
 url = f'https://graph.facebook.com/v12.0/act_{ad_account_id}/insights'
-
 params = {
     'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,cpc,spend',
     'access_token': access_token,
@@ -13,13 +14,7 @@ params = {
 }
 
 response = requests.get(url, params=params)
-data = response.json()
-
-if 'data' not in data:
-    print("Response data:", json.dumps(data, indent=2))
-    raise KeyError("'data' key not found in the response")
-
-data = data['data']
+data = response.json().get('data')
 
 with open('facebook_ads_data.csv', 'w', newline='') as csvfile:
     fieldnames = ['Дата', 'Клики', 'Охват', 'Показы', 'Бюджет', 'Заявки', 'Кампания']

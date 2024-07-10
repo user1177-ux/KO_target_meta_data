@@ -33,7 +33,7 @@ def fetch_data():
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'date_preset': 'last_30d',
+            'date_preset': 'last_7d',
             'time_increment': 1
         }
         response = requests.get(insight_url, params=insight_params)

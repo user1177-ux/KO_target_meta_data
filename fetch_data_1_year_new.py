@@ -76,7 +76,7 @@ def fetch_data():
 
     if result:
         keys = result[0].keys()
-        file_path = 'facebook_ads_data_leads.csv'
+        file_path = 'facebook_ads_data_leads_1_year111.csv'
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()

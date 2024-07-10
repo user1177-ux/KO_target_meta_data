@@ -1,8 +1,8 @@
 import requests
 import csv
 
-access_token = '<YOUR_ACCESS_TOKEN>'
-ad_account_id = '<YOUR_AD_ACCOUNT_ID>'
+access_token = 'EAAUjRaaBokMBO02uknVsQwJr0ZCqLj8d0KF8LulHDjqcRGIT5ZCkBhZCZCi47cOZCm5yTvSJ1zaHM8rRtK1DBg3NYz28cZA49PrxIn1V0RQ3SdiiZBlIPM3OQu0DmdrOTBQduKliJHZANgtX8huad46ZBxWCRVqrwD3QNzxh1Re8YZCIuLQHxsUCPadn4vL4Kbh4YB'
+ad_account_id = '1219281772787137'
 url = f'https://graph.facebook.com/v12.0/act_{ad_account_id}/insights'
 
 params = {

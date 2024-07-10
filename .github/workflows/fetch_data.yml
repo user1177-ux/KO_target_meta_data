@@ -2,7 +2,7 @@ name: Fetch and Update Data
 
 on:
   schedule:
-    - cron: '36 7 * * *'  # This sets the schedule to 11:20 AM Armenia time
+    - cron: '37 7 * * *'  # This sets the schedule to 11:20 AM Armenia time
 
 jobs:
   fetch-update:

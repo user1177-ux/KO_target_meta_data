@@ -57,9 +57,9 @@ def fetch_data():
             campaign_name = record['campaign_name']
             if 'русский' in campaign_name.lower():
                 language = 'RU'
-            elif 'английский' в campaign_name.lower():
+            elif 'английский' in campaign_name.lower():
                 language = 'EN'
-            elif 'словенский' в campaign_name.lower():
+            elif 'словенский' in campaign_name.lower():
                 language = 'SLO'
             else:
                 language = 'UNKNOWN'

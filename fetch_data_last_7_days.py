@@ -10,11 +10,6 @@ def fetch_data():
     print(f"Using access_token: {access_token}")
     print(f"Using ad_account_id: {ad_account_id}")
 
-    # Даты
-    end_date = datetime.now() - timedelta(days=1)
-    end_date_str = end_date.strftime('%Y-%m-%d')
-    start_date = (end_date - timedelta(days=7)).strftime('%Y-%m-%d')
-
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
 
@@ -36,7 +31,7 @@ def fetch_data():
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'time_range': {'since': start_date, 'until': end_date_str},
+            'date_preset': 'last_7d',
             'time_increment': 1
         }
         response = requests.get(insight_url, params=insight_params)
@@ -79,7 +74,7 @@ def fetch_data():
 
     if result:
         keys = result[0].keys()
-        file_path = 'facebook_ads_data_leads_7_days.csv'
+        file_path = 'facebook_ads_data_leads_7_days111.csv'
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()

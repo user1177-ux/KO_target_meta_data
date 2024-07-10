@@ -1,18 +1,21 @@
 import requests
 import csv
 import os
-from datetime import datetime, timedelta
+import datetime
 
 def fetch_data():
+    # Ваш access token и ad_account_id
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
+    # URL для запроса данных
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
 
     response = requests.get(url, params=params)
     data = response.json()
 
+    # Проверка на наличие ошибок в ответе
     if 'error' in data:
         print(f"Ошибка в ответе API: {data['error']}")
         return
@@ -23,17 +26,17 @@ def fetch_data():
         return
 
     result = []
+    today = datetime.date.today()
+    start_date = datetime.date(2020, 1, 1)  # Дата начала (укажите необходимую дату начала)
+    end_date = today - datetime.timedelta(days=1)  # Дата окончания - вчерашний день
+
     for campaign in data['data']:
         insight_url = f'https://graph.facebook.com/v20.0/{campaign["id"]}/insights'
-        today = datetime.today()
-        yesterday = today - timedelta(days=1)
-        start_date = "2020-01-01"
-        end_date = yesterday.strftime('%Y-%m-%d')
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'time_increment': 1,
-            'time_range': {'since': start_date, 'until': end_date}
+            'time_range': {'since': start_date.strftime('%Y-%m-%d'), 'until': end_date.strftime('%Y-%m-%d')},
+            'time_increment': 1
         }
         response = requests.get(insight_url, params=insight_params)
         insight_data = response.json()
@@ -58,7 +61,7 @@ def fetch_data():
                 language = 'RU'
             elif 'английский' in campaign_name.lower():
                 language = 'EN'
-            elif 'словенский' в campaign_name.lower():
+            elif 'словенский' in campaign_name.lower():
                 language = 'SLO'
             else:
                 language = 'UNKNOWN'

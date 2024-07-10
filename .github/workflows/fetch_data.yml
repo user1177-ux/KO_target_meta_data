@@ -1,21 +1,20 @@
 name: Fetch and Update Data
 
 on:
-  schedule:
-    - cron: '0 0 * * *' # This runs the job daily at midnight
-  workflow_dispatch: # This enables manual triggers
+  workflow_dispatch:
 
 jobs:
   fetch-update:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
-        python-version: 3.x
+        python-version: '3.x'
 
     - name: Install dependencies
       run: |
@@ -23,11 +22,10 @@ jobs:
         pip install requests
 
     - name: Run data fetch script
+      run: python fetch_data.py
       env:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
-      run: |
-        python fetch_data.py
 
     - name: Commit and push changes
       run: |

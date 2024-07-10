@@ -2,7 +2,8 @@ name: Fetch and Update Data
 
 on:
   schedule:
-    - cron: '52 7 * * *' # Запуск в 11:20 по Армении
+    - cron: '55 7 * * *' # Запуск в 11:20 по Армении
+  workflow_dispatch:
 
 jobs:
   fetch-update:
@@ -19,6 +20,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests pandas
     - name: Run data fetch script
+      env:
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
       run: python fetch_data.py
     - name: Commit and push changes
       run: |

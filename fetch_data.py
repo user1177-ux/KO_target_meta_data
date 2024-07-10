@@ -7,14 +7,12 @@ def fetch_data():
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
-    # URL для запроса данных
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
 
     response = requests.get(url, params=params)
     data = response.json()
 
-    # Проверка на наличие ошибок в ответе
     if 'error' in data:
         print(f"Ошибка в ответе API: {data['error']}")
         return

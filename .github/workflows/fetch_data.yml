@@ -1,26 +1,31 @@
 name: Fetch and Update Data
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: '37 7 * * *'  # Запланировать на 11:37 по времени Армении
+    - cron: '37 7 * * *' # This sets the schedule to 11:37 AM Armenia time
+  workflow_dispatch:
 
 jobs:
   fetch-update:
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: 3.8  # Подкорректируйте версию, если нужно
+        python-version: 3.8 # Adjust the version as needed
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install requests pandas
+
     - name: Run data fetch script
       run: python fetch_data.py
+
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'

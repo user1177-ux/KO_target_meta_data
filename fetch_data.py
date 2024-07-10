@@ -1,13 +1,17 @@
 import requests
 import csv
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def fetch_data():
     # Получаем значения секретов из переменных окружения
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
+    # Устанавливаем дату до вчерашнего дня
+    until_date = datetime.now() - timedelta(days=1)
+    until_date_str = until_date.strftime('%Y-%m-%d')
+    
     # URL для запроса данных
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
@@ -31,6 +35,7 @@ def fetch_data():
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
+            'time_range': {'until': until_date_str},
             'time_increment': 1
         }
         response = requests.get(insight_url, params=insight_params)
@@ -56,7 +61,7 @@ def fetch_data():
                 language = 'RU'
             elif 'английский' in campaign_name.lower():
                 language = 'EN'
-            elif 'словенский' in campaign_name.lower():
+            elif 'словенский' в campaign_name.lower():
                 language = 'SLO'
             else:
                 language = 'UNKNOWN'
@@ -74,6 +79,7 @@ def fetch_data():
     if result:
         keys = result[0].keys()
         file_path = 'facebook_ads_data_leads.csv'
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()

@@ -3,7 +3,6 @@ name: Fetch and Update Data
 on:
   schedule:
     - cron: '37 7 * * *' # This sets the schedule to 11:37 AM Armenia time
-  workflow_dispatch:
 
 jobs:
   fetch-update:
@@ -12,7 +11,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
-
+      
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
@@ -25,8 +24,14 @@ jobs:
 
     - name: Run data fetch script
       run: python fetch_data.py
+      
+    - name: Check if data file has changes
+      run: |
+        git fetch origin
+        git diff --exit-code || exit 1
 
     - name: Commit and push changes
+      if: success()
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'

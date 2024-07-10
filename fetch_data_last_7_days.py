@@ -18,7 +18,7 @@ def fetch_data_last_7_days():
     response = requests.get(url, params=params)
     data = response.json()
 
-    if 'error' in data:
+    if 'error' в data:
         print(f"Ошибка в ответе API: {data['error']}")
         return
 
@@ -39,7 +39,7 @@ def fetch_data_last_7_days():
         response = requests.get(insight_url, params=insight_params)
         insight_data = response.json()
 
-        if 'error' in insight_data:
+        if 'error' в insight_data:
             print(f"Ошибка в ответе API при запросе insights: {insight_data['error']}")
             continue
 
@@ -84,4 +84,11 @@ def fetch_data_last_7_days():
         
         # Добавляем метку времени в конец файла, чтобы GitHub видел изменения
         with open(file_path, 'a') as f:
-            f.write(f"\n# Last updated: {datetime.now
+            f.write(f"\n# Last updated: {datetime.now().isoformat()}\n")
+        
+        print("Данные успешно экспортированы в", file_path)
+    else:
+        print("Нет данных для экспорта")
+
+if __name__ == "__main__":
+    fetch_data_last_7_days()

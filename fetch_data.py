@@ -4,48 +4,50 @@ import os
 from datetime import datetime, timedelta
 
 def fetch_data():
+    # Ваш access token и ad_account_id
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
-    if not access_token or not ad_account_id:
-        print("Access token or Ad account ID not found.")
-        return
-
+    # URL для запроса данных
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
 
     response = requests.get(url, params=params)
     data = response.json()
 
+    # Проверка на наличие ошибок в ответе
     if 'error' in data:
-        print(f"API response error: {data['error']}")
+        print(f"Ошибка в ответе API: {data['error']}")
         return
 
     if 'data' not in data:
-        print("API response does not contain 'data' key")
-        print("Full response:", data)
+        print("Ответ API не содержит ключ 'data'")
+        print("Полный ответ:", data)
         return
 
     result = []
     for campaign in data['data']:
         insight_url = f'https://graph.facebook.com/v20.0/{campaign["id"]}/insights'
-        end_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+        today = datetime.today()
+        yesterday = today - timedelta(days=1)
+        start_date = "2020-01-01"
+        end_date = yesterday.strftime('%Y-%m-%d')
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'time_range': {'since': '2022-01-01', 'until': end_date},
-            'time_increment': 1
+            'time_increment': 1,
+            'time_range': {'since': start_date, 'until': end_date}
         }
         response = requests.get(insight_url, params=insight_params)
         insight_data = response.json()
 
         if 'error' in insight_data:
-            print(f"API response error for insights: {insight_data['error']}")
+            print(f"Ошибка в ответе API при запросе insights: {insight_data['error']}")
             continue
 
         if 'data' not in insight_data:
-            print("API response for insights does not contain 'data' key")
-            print("Full response:", insight_data)
+            print("Ответ API на запрос insights не содержит ключ 'data'")
+            print("Полный ответ:", insight_data)
             continue
 
         for record in insight_data['data']:
@@ -57,9 +59,9 @@ def fetch_data():
             campaign_name = record['campaign_name']
             if 'русский' in campaign_name.lower():
                 language = 'RU'
-            elif 'английский' в campaign_name.lower():
+            elif 'английский' in campaign_name.lower():
                 language = 'EN'
-            elif 'словенский' в campaign_name.lower():
+            elif 'словенский' in campaign_name.lower():
                 language = 'SLO'
             else:
                 language = 'UNKNOWN'
@@ -83,9 +85,9 @@ def fetch_data():
             dict_writer.writeheader()
             dict_writer.writerows(result)
 
-        print("Data successfully exported to", file_path)
+        print("Данные успешно экспортированы в", file_path)
     else:
-        print("No data to export")
+        print("Нет данных для экспорта")
 
 if __name__ == "__main__":
     fetch_data()

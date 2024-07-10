@@ -57,11 +57,11 @@ def fetch_data():
             impressions = int(record['impressions'])
             clicks = int(record['clicks'])
             campaign_name = record['campaign_name']
-            if 'русский' in campaign_name.lower():
+            if 'русский' в campaign_name.lower():
                 language = 'RU'
-            elif 'английский' in campaign_name.lower():
+            elif 'английский' в campaign_name.lower():
                 language = 'EN'
-            elif 'словенский' in campaign_name.lower():
+            elif 'словенский' в campaign_name.lower():
                 language = 'SLO'
             else:
                 language = 'UNKNOWN'

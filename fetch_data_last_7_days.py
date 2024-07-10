@@ -84,11 +84,4 @@ def fetch_data_last_7_days():
         
         # Добавляем метку времени в конец файла, чтобы GitHub видел изменения
         with open(file_path, 'a') as f:
-            f.write(f"\n# Last updated: {datetime.now().isoformat()}\n")
-        
-        print("Данные успешно экспортированы в", file_path)
-    else:
-        print("Нет данных для экспорта")
-
-if __name__ == "__main__":
-    fetch_data_last_7_days()
+            f.write(f"\n# Last updated: {datetime.now

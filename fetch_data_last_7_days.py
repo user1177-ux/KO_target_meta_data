@@ -1,4 +1,3 @@
-# fetch_data_last_7_days.py
 import requests
 import csv
 import os

@@ -2,7 +2,7 @@ name: Fetch and Update Data
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Запуск каждый день в полночь
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
@@ -16,10 +16,11 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: '3.12'
+        python-version: '3.x'
 
     - name: Install dependencies
-      run: pip install requests
+      run: |
+        pip install requests
 
     - name: Run data fetch script
       run: python fetch_data.py

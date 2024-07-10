@@ -7,6 +7,9 @@ def fetch_data():
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
+    print(f"Using access_token: {access_token}")
+    print(f"Using ad_account_id: {ad_account_id}")
+
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
 
@@ -70,21 +73,12 @@ def fetch_data():
             })
 
     if result:
-        # Удаление дубликатов
-        seen = set()
-        unique_result = []
-        for d in result:
-            t = tuple(d.items())
-            if t not in seen:
-                seen.add(t)
-                unique_result.append(d)
-
-        keys = unique_result[0].keys()
+        keys = result[0].keys()
         file_path = 'facebook_ads_data_leads_1_year.csv'
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()
-            dict_writer.writerows(unique_result)
+            dict_writer.writerows(result)
         
         # Добавляем метку времени в конец файла, чтобы GitHub видел изменения
         with open(file_path, 'a') as f:

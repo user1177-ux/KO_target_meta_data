@@ -1,7 +1,7 @@
 import requests
 import csv
 import os
-import datetime
+from datetime import datetime, timedelta
 
 def fetch_data():
     # Ваш access token и ad_account_id
@@ -26,17 +26,22 @@ def fetch_data():
         return
 
     result = []
-    today = datetime.date.today()
-    start_date = datetime.date(2020, 1, 1)  # Дата начала (укажите необходимую дату начала)
-    end_date = today - datetime.timedelta(days=1)  # Дата окончания - вчерашний день
-
     for campaign in data['data']:
         insight_url = f'https://graph.facebook.com/v20.0/{campaign["id"]}/insights'
+        
+        # Рассчитать даты
+        end_date = datetime.now() - timedelta(days=1)
+        start_date = datetime(1970, 1, 1)
+        
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'time_range': {'since': start_date.strftime('%Y-%m-%d'), 'until': end_date.strftime('%Y-%m-%d')},
-            'time_increment': 1
+            'time_increment': 1,
+            'date_preset': 'maximum',
+            'time_range': {
+                'since': start_date.strftime('%Y-%m-%d'),
+                'until': end_date.strftime('%Y-%m-%d')
+            }
         }
         response = requests.get(insight_url, params=insight_params)
         insight_data = response.json()
@@ -57,11 +62,11 @@ def fetch_data():
             impressions = int(record['impressions'])
             clicks = int(record['clicks'])
             campaign_name = record['campaign_name']
-            if 'русский' в campaign_name.lower():
+            if 'русский' in campaign_name.lower():
                 language = 'RU'
-            elif 'английский' в campaign_name.lower():
+            elif 'английский' in campaign_name.lower():
                 language = 'EN'
-            elif 'словенский' в campaign_name.lower():
+            elif 'словенский' in campaign_name.lower():
                 language = 'SLO'
             else:
                 language = 'UNKNOWN'
@@ -79,7 +84,6 @@ def fetch_data():
     if result:
         keys = result[0].keys()
         file_path = 'facebook_ads_data_leads.csv'
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()

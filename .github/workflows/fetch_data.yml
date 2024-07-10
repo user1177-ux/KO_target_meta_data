@@ -27,6 +27,9 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
 
+    - name: Check if CSV file exists
+      run: ls -l facebook_ads_data_leads_1_year111.csv
+
     - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
@@ -36,3 +39,4 @@ jobs:
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: true

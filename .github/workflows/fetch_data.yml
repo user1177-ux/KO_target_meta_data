@@ -2,7 +2,8 @@ name: Fetch and Update Data
 
 on:
   schedule:
-    - cron: '37 7 * * *'  # This sets the schedule to 11:20 AM Armenia time
+    - cron: '20 7 * * *'  # Запуск в 11:20 по Армении (07:20 UTC)
+  workflow_dispatch:
 
 jobs:
   fetch-update:
@@ -10,12 +11,12 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v3  # Обновлено до v3
 
     - name: Set up Python
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v3  # Обновлено до v3
       with:
-        python-version: 3.8  # Adjust the version as needed
+        python-version: 3.8  # Настроить версию Python по мере необходимости
 
     - name: Install dependencies
       run: |
@@ -30,7 +31,7 @@ jobs:
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add .
-        git commit -m "Updated data"
+        git commit -m "Update data"
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -33,7 +33,7 @@ def fetch_data():
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'time_range': {'since':"2024-07-01",'until':"2024-07-06"},
+            'time_range': {'since': start_date, 'until': end_date_str},
             'time_increment': 1
         }
         response = requests.get(insight_url, params=insight_params)
@@ -57,9 +57,9 @@ def fetch_data():
             campaign_name = record['campaign_name']
             if 'русский' in campaign_name.lower():
                 language = 'RU'
-            elif 'английский' in campaign_name.lower():
+            elif 'английский' в campaign_name.lower():
                 language = 'EN'
-            elif 'словенский' in campaign_name.lower():
+            elif 'словенский' в campaign_name.lower():
                 language = 'SLO'
             else:
                 language = 'UNKNOWN'

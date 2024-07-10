@@ -4,14 +4,10 @@ import os
 from datetime import datetime, timedelta
 
 def fetch_data():
-    # Получаем значения секретов из переменных окружения
+    # Ваш access token и ad_account_id
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
-    # Устанавливаем дату до вчерашнего дня
-    until_date = datetime.now() - timedelta(days=1)
-    until_date_str = until_date.strftime('%Y-%m-%d')
-    
     # URL для запроса данных
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
@@ -30,51 +26,65 @@ def fetch_data():
         return
 
     result = []
-    for campaign in data['data']:
-        insight_url = f'https://graph.facebook.com/v20.0/{campaign["id"]}/insights'
-        insight_params = {
-            'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
-            'access_token': access_token,
-            'time_range': {'until': until_date_str},
-            'time_increment': 1
-        }
-        response = requests.get(insight_url, params=insight_params)
-        insight_data = response.json()
+    today = datetime.today()
+    end_date = today - timedelta(days=1)
+    start_date = datetime(2020, 1, 1)  # Установите дату начала
+    date_ranges = []
 
-        if 'error' in insight_data:
-            print(f"Ошибка в ответе API при запросе insights: {insight_data['error']}")
-            continue
+    current_date = start_date
+    while current_date < end_date:
+        next_date = current_date + timedelta(days=90)  # Увеличение диапазона до 90 дней
+        if next_date > end_date:
+            next_date = end_date
+        date_ranges.append((current_date.strftime('%Y-%m-%d'), next_date.strftime('%Y-%m-%d')))
+        current_date = next_date + timedelta(days=1)
 
-        if 'data' not in insight_data:
-            print("Ответ API на запрос insights не содержит ключ 'data'")
-            print("Полный ответ:", insight_data)
-            continue
+    for start, end in date_ranges:
+        for campaign in data['data']:
+            insight_url = f'https://graph.facebook.com/v20.0/{campaign["id"]}/insights'
+            insight_params = {
+                'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
+                'access_token': access_token,
+                'time_increment': 1,
+                'time_range': {'since': start, 'until': end}
+            }
+            response = requests.get(insight_url, params=insight_params)
+            insight_data = response.json()
 
-        for record in insight_data['data']:
-            lead_action = next((action for action in record.get('actions', []) if action['action_type'] == 'lead'), None)
-            lead_value = int(lead_action['value']) if lead_action else 0
-            spend = float(record['spend'])
-            impressions = int(record['impressions'])
-            clicks = int(record['clicks'])
-            campaign_name = record['campaign_name']
-            if 'русский' in campaign_name.lower():
-                language = 'RU'
-            elif 'английский' in campaign_name.lower():
-                language = 'EN'
-            elif 'словенский' в campaign_name.lower():
-                language = 'SLO'
-            else:
-                language = 'UNKNOWN'
-            
-            result.append({
-                'Дата': record['date_start'],
-                'Клики': clicks,
-                'Охват': record['reach'],
-                'Показы': impressions,
-                'Бюджет': f"{spend}".replace('.', ','),
-                'Заявки': lead_value,
-                'Кампания': language,
-            })
+            if 'error' in insight_data:
+                print(f"Ошибка в ответе API при запросе insights: {insight_data['error']}")
+                continue
+
+            if 'data' not in insight_data:
+                print("Ответ API на запрос insights не содержит ключ 'data'")
+                print("Полный ответ:", insight_data)
+                continue
+
+            for record in insight_data['data']:
+                lead_action = next((action for action in record.get('actions', []) if action['action_type'] == 'lead'), None)
+                lead_value = int(lead_action['value']) if lead_action else 0
+                spend = float(record['spend'])
+                impressions = int(record['impressions'])
+                clicks = int(record['clicks'])
+                campaign_name = record['campaign_name']
+                if 'русский' in campaign_name.lower():
+                    language = 'RU'
+                elif 'английский' in campaign_name.lower():
+                    language = 'EN'
+                elif 'словенский' in campaign_name.lower():
+                    language = 'SLO'
+                else:
+                    language = 'UNKNOWN'
+                
+                result.append({
+                    'Дата': record['date_start'],
+                    'Клики': clicks,
+                    'Охват': record['reach'],
+                    'Показы': impressions,
+                    'Бюджет': f"{spend}".replace('.', ','),
+                    'Заявки': lead_value,
+                    'Кампания': language,
+                })
 
     if result:
         keys = result[0].keys()

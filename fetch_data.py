@@ -1,6 +1,7 @@
 import requests
 import csv
 import os
+from datetime import datetime, timedelta
 
 def fetch_data():
     # Получаем значения секретов из переменных окружения
@@ -26,10 +27,15 @@ def fetch_data():
 
     result = []
     for campaign in data['data']:
+        # Получение текущей даты и даты за последние 7 дней
+        today = datetime.now().strftime('%Y-%m-%d')
+        week_ago = (datetime.now() - timedelta(days=7)).strftime('%Y-%m-%d')
+
         insight_url = f'https://graph.facebook.com/v20.0/{campaign["id"]}/insights'
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
+            'time_range': {'since': week_ago, 'until': today},  # Указание временного интервала
             'time_increment': 1
         }
         response = requests.get(insight_url, params=insight_params)

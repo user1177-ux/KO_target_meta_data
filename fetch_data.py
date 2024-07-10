@@ -86,15 +86,15 @@ def main():
     # Даты
     end_date = datetime.now() - timedelta(days=1)
     end_date_str = end_date.strftime('%Y-%m-%d')
-    last_3d_start_date = (end_date - timedelta(days=3)).strftime('%Y-%m-%d')
+    last_7d_start_date = (end_date - timedelta(days=7)).strftime('%Y-%m-%d')
     last_year_start_date = (end_date - timedelta(days=365)).strftime('%Y-%m-%d')
 
     # Получение данных
-    data_last_3d = fetch_data('last_3d', last_3d_start_date, end_date_str)
+    data_last_7d = fetch_data('last_7d', last_7d_start_date, end_date_str)
     data_last_year = fetch_data('last_year', last_year_start_date, end_date_str)
 
     # Объединение данных и удаление дубликатов
-    all_data = data_last_3d + data_last_year
+    all_data = data_last_7d + data_last_year
     all_data = remove_duplicates(all_data)
 
     if all_data:

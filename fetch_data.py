@@ -14,17 +14,11 @@ params = {
 }
 
 response = requests.get(url, params=params)
-response_data = response.json()
+data = response.json().get('data', [])
 
-# Выводим полный ответ для диагностики
-print(f"Response: {response_data}")
+print(f'Data fetched: {data}')  # Диагностика данных
 
-data = response_data.get('data')
-if not data:
-    print("No data received. Check your access token and ad account ID.")
-else:
-    print(f"Data fetched: {data}")
-
+if data:
     with open('facebook_ads_data.csv', 'w', newline='') as csvfile:
         fieldnames = ['Дата', 'Клики', 'Охват', 'Показы', 'Бюджет', 'Заявки', 'Кампания']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -42,3 +36,5 @@ else:
                 'Заявки': lead_value,
                 'Кампания': campaign
             })
+else:
+    print("No data received. Check your access token and ad account ID.")

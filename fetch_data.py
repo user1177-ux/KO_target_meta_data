@@ -1,21 +1,23 @@
 import requests
 import csv
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def fetch_data():
-    # Получаем значения секретов из переменных окружения
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
-    # URL для запроса данных
+    # Даты
+    end_date = datetime.now() - timedelta(days=1)
+    end_date_str = end_date.strftime('%Y-%m-%d')
+    start_date = '2020-01-01'  # Начальная дата для получения всех данных
+
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
 
     response = requests.get(url, params=params)
     data = response.json()
 
-    # Проверка на наличие ошибок в ответе
     if 'error' in data:
         print(f"Ошибка в ответе API: {data['error']}")
         return
@@ -31,8 +33,8 @@ def fetch_data():
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'time_increment': 1,
-            'time_range': {'since': "2024-07-01", 'until': "2024-09-08"}
+            'time_range': {'since': start_date, 'until': end_date_str},
+            'time_increment': 1
         }
         response = requests.get(insight_url, params=insight_params)
         insight_data = response.json()
@@ -55,9 +57,9 @@ def fetch_data():
             campaign_name = record['campaign_name']
             if 'русский' in campaign_name.lower():
                 language = 'RU'
-            elif 'английский' in campaign_name.lower():
+            elif 'английский' в campaign_name.lower():
                 language = 'EN'
-            elif 'словенский' in campaign_name.lower():
+            elif 'словенский' в campaign_name.lower():
                 language = 'SLO'
             else:
                 language = 'UNKNOWN'
@@ -79,7 +81,11 @@ def fetch_data():
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()
             dict_writer.writerows(result)
-
+        
+        # Добавляем метку времени в конец файла, чтобы GitHub видел изменения
+        with open(file_path, 'a') as f:
+            f.write(f"\n# Last updated: {datetime.now().isoformat()}\n")
+        
         print("Данные успешно экспортированы в", file_path)
     else:
         print("Нет данных для экспорта")

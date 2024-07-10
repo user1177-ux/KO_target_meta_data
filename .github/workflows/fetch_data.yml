@@ -1,6 +1,8 @@
 name: Fetch and Update Data
 
 on:
+  schedule:
+    - cron: '0 0 * * *'  # Запуск каждый день в полночь
   workflow_dispatch:
 
 jobs:
@@ -8,52 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out repository
+    - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: '3.x'
+        python-version: '3.12'
 
     - name: Install dependencies
-      run: python -m pip install requests
+      run: pip install requests
 
-    - name: Ensure csv files exist
-      run: |
-        touch facebook_ads_data_leads_1_year.csv
-        touch facebook_ads_data_leads_7_days.csv
-
-    - name: Run data fetch script for last year
+    - name: Run data fetch script
+      run: python fetch_data_1_year_new.py
       env:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
-      run: python fetch_data_last_year.py
 
-    - name: Commit and push changes for last year
+    - name: Commit and push changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add facebook_ads_data_leads_1_year.csv
-        git commit -m 'Updated data for last year'
+        git add facebook_ads_data_leads_1_year_new.csv
+        git commit -m 'Updated data'
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      continue-on-error: true
-
-    - name: Run data fetch script for last 7 days
-      env:
-        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
-      run: python fetch_data_last_7_days.py
-
-    - name: Commit and push changes for last 7 days
-      run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add facebook_ads_data_leads_7_days.csv
-        git commit -m 'Updated data for last 7 days'
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      continue-on-error: true

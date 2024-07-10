@@ -3,14 +3,9 @@ import csv
 import os
 from datetime import datetime, timedelta
 
-def fetch_data_last_year():
+def fetch_data():
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
-
-    # Даты
-    end_date = datetime.now() - timedelta(days=1)
-    end_date_str = end_date.strftime('%Y-%m-%d')
-    start_date = (end_date - timedelta(days=365)).strftime('%Y-%m-%d')
 
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
@@ -33,7 +28,7 @@ def fetch_data_last_year():
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'time_range': {'since': start_date, 'until': end_date_str},
+            'date_preset': 'last_year',
             'time_increment': 1
         }
         response = requests.get(insight_url, params=insight_params)
@@ -91,4 +86,4 @@ def fetch_data_last_year():
         print("Нет данных для экспорта")
 
 if __name__ == "__main__":
-    fetch_data_last_year()
+    fetch_data()

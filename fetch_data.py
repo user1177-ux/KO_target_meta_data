@@ -1,6 +1,7 @@
 import requests
 import csv
 import os
+from datetime import datetime, timedelta
 
 def fetch_data():
     access_token = os.getenv('ACCESS_TOKEN')
@@ -24,12 +25,15 @@ def fetch_data():
         return
 
     result = []
+    today = datetime.today().strftime('%Y-%m-%d')
+    seven_days_ago = (datetime.today() - timedelta(days=7)).strftime('%Y-%m-%d')
+
     for campaign in data['data']:
         insight_url = f'https://graph.facebook.com/v20.0/{campaign["id"]}/insights'
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'time_range': {'since':'2023-07-07','until':'2023-07-10'}
+            'time_range': {'since': seven_days_ago, 'until': today}
         }
         response = requests.get(insight_url, params=insight_params)
         insight_data = response.json()

@@ -6,6 +6,9 @@ import os
 access_token = os.getenv('ACCESS_TOKEN')
 ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
+print(f'Using access token: {access_token}')
+print(f'Using ad account id: {ad_account_id}')
+
 url = f'https://graph.facebook.com/v12.0/act_{ad_account_id}/insights'
 params = {
     'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,cpc,spend',
@@ -14,27 +17,33 @@ params = {
 }
 
 response = requests.get(url, params=params)
-data = response.json().get('data', [])
+data = response.json()
+print(f'Response data: {data}')
 
-print(f'Data fetched: {data}')  # Диагностика данных
+if 'data' not in data:
+    raise KeyError("'data' key not found in the response")
 
-if data:
-    with open('facebook_ads_data.csv', 'w', newline='') as csvfile:
-        fieldnames = ['Дата', 'Клики', 'Охват', 'Показы', 'Бюджет', 'Заявки', 'Кампания']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-        
-        for record in data:
-            lead_value = next((action['value'] for action in record['actions'] if action['action_type'] == 'lead'), 0)
-            campaign = 'RU' if 'русский' in record['campaign_name'].lower() else 'EN' if 'английский' in record['campaign_name'].lower() else 'SLO'
-            writer.writerow({
-                'Дата': record['date_start'],
-                'Клики': record['clicks'],
-                'Охват': record['reach'],
-                'Показы': record['impressions'],
-                'Бюджет': record['spend'],
-                'Заявки': lead_value,
-                'Кампания': campaign
-            })
-else:
-    print("No data received. Check your access token and ad account ID.")
+data = data['data']
+
+if not data:
+    raise ValueError('No data received. Check your access token and ad account ID.')
+
+with open('facebook_ads_data.csv', 'w', newline='') as csvfile:
+    fieldnames = ['Дата', 'Клики', 'Охват', 'Показы', 'Бюджет', 'Заявки', 'Кампания']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+
+    for record in data:
+        lead_value = next((action['value'] for action in record['actions'] if action['action_type'] == 'lead'), 0)
+        campaign = 'RU' if 'русский' in record['campaign_name'].lower() else 'EN' if 'английский' in record['campaign_name'].lower() else 'SLO'
+        writer.writerow({
+            'Дата': record['date_start'],
+            'Клики': record['clicks'],
+            'Охват': record['reach'],
+            'Показы': record['impressions'],
+            'Бюджет': record['spend'],
+            'Заявки': lead_value,
+            'Кампания': campaign
+        })
+
+print('Data written to facebook_ads_data.csv')

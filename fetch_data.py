@@ -31,7 +31,8 @@ def fetch_data():
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'time_increment': 1
+            'time_increment': 1,
+            'date_preset': 'last_7d'
         }
         response = requests.get(insight_url, params=insight_params)
         insight_data = response.json()
@@ -74,7 +75,6 @@ def fetch_data():
     if result:
         keys = result[0].keys()
         file_path = 'facebook_ads_data_leads.csv'
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()

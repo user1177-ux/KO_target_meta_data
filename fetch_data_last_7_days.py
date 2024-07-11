@@ -7,8 +7,10 @@ def fetch_data():
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
-    print(f"Using access_token: {access_token}")
-    print(f"Using ad_account_id: {ad_account_id}")
+    # Даты
+    end_date = datetime.now() - timedelta(days=1)
+    end_date_str = end_date.strftime('%Y-%m-%d')
+    start_date = '2020-01-01'  # Начальная дата для получения всех данных
 
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
@@ -74,7 +76,7 @@ def fetch_data():
 
     if result:
         keys = result[0].keys()
-        file_path = 'facebook_ads_data_leads_7_days111.csv'
+        file_path = 'facebook_ads_data_leads_7_days.csv'
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()

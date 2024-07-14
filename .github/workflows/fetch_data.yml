@@ -2,6 +2,8 @@ name: Fetch and Update Data
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '00 15 * * *'  # 18:30 по времени Армении (GMT+4), что соответствует 14:30 по UTC
 
 jobs:
   fetch-update:

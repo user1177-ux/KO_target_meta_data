@@ -3,7 +3,7 @@ import csv
 import os
 from datetime import datetime, timedelta
 
-def fetch_data():
+def fetch_data_1_year():
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
@@ -91,4 +91,4 @@ def fetch_data():
         print("Нет данных для экспорта")
 
 if __name__ == "__main__":
-    fetch_data()
+    fetch_data_1_year()

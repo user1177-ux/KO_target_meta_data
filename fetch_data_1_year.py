@@ -1,11 +1,16 @@
 import requests
 import csv
 import os
+import json
 from datetime import datetime, timedelta
 
 def fetch_data():
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
+
+    if not access_token or not ad_account_id:
+        print("ACCESS_TOKEN or AD_ACCOUNT_ID not set")
+        return
 
     # Даты
     end_date = datetime.now() - timedelta(days=1)
@@ -27,13 +32,15 @@ def fetch_data():
         print("Полный ответ:", data)
         return
 
+    print(f"Получено {len(data['data'])} кампаний")
+
     result = []
     for campaign in data['data']:
         insight_url = f'https://graph.facebook.com/v20.0/{campaign["id"]}/insights'
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'time_range': {'since': start_date, 'until': end_date_str},
+            'time_range': json.dumps({'since': start_date, 'until': end_date_str}),
             'time_increment': 1
         }
         response = requests.get(insight_url, params=insight_params)
@@ -59,7 +66,7 @@ def fetch_data():
                 language = 'RU'
             elif 'английский' in campaign_name.lower():
                 language = 'EN'
-            elif 'словенский' in campaign_name.lower():
+            elif 'словенский' в campaign_name.lower():
                 language = 'SLO'
             else:
                 language = 'UNKNOWN'
@@ -75,6 +82,7 @@ def fetch_data():
             })
 
     if result:
+        print(f"Запись {len(result)} записей в файл")
         keys = result[0].keys()
         file_path = 'facebook_ads_data_leads_1_year.csv'
         with open(file_path, 'w', newline='') as output_file:

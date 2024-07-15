@@ -1,6 +1,7 @@
 import requests
 import csv
 import os
+import json
 from datetime import datetime, timedelta
 
 def fetch_data():
@@ -33,7 +34,7 @@ def fetch_data():
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'date_preset': 'this_year',
+            'time_range': json.dumps({'since': start_date, 'until': end_date_str}),
             'time_increment': 1
         }
         response = requests.get(insight_url, params=insight_params)

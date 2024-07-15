@@ -15,7 +15,7 @@ def fetch_data():
     # Даты
     end_date = datetime.now() - timedelta(days=1)
     end_date_str = end_date.strftime('%Y-%m-%d')
-    start_date = '2020-01-01'  # Начальная дата для получения всех данных
+    start_date = '2024-06-01'  # Начальная дата для получения всех данных
 
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}

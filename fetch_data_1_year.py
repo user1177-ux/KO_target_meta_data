@@ -1,6 +1,7 @@
 import requests
 import csv
 import os
+import json
 from datetime import datetime, timedelta
 
 def fetch_data_1_year():

@@ -4,7 +4,7 @@ import os
 import json
 from datetime import datetime, timedelta
 
-def fetch_data_1_year():
+def fetch_data():
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
@@ -92,4 +92,4 @@ def fetch_data_1_year():
         print("Нет данных для экспорта")
 
 if __name__ == "__main__":
-    fetch_data_1_year()
+    fetch_data()

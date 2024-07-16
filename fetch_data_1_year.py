@@ -14,8 +14,8 @@ def fetch_data():
 
     # Даты
     end_date = datetime.now() - timedelta(days=1)
-    end_date_str = '2024-07-14'
-    start_date = '2024-06-31'  # Начальная дата для получения всех данных
+    end_date_str = end_date.strftime('%Y-%m-%d')
+    start_date = '2024-06-01'  # Начальная дата для получения всех данных
 
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {'access_token': access_token}
@@ -40,7 +40,7 @@ def fetch_data():
         insight_params = {
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
-            'date_preset': 'last_30d',
+            'time_range': json.dumps({'since': start_date, 'until': end_date_str}),
             'time_increment': 1
         }
         response = requests.get(insight_url, params=insight_params)

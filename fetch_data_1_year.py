@@ -41,7 +41,7 @@ def fetch_data():
             'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
             'access_token': access_token,
             'time_range': json.dumps({'since': start_date, 'until': end_date_str}),
-            'time_increment': 1
+            'time_increment': '1'
         }
         response = requests.get(insight_url, params=insight_params)
         insight_data = response.json()

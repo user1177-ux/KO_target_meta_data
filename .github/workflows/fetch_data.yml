@@ -36,7 +36,7 @@ jobs:
         AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
 
     - name: Run lead data fetch script
-      run: python fetch_lead_data.py
+      run: python fetch_leads_data.py
       env:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}

@@ -81,6 +81,10 @@ def fetch_leads_data():
         print(f"Запись {len(all_leads)} записей в файл")
         keys = all_leads[0].keys()
         file_path = 'facebook_leads_data.csv'
+
+        # Проверка перед записью файла
+        print("Начинаю запись файла...")
+
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()
@@ -88,7 +92,9 @@ def fetch_leads_data():
 
         # Добавляем метку времени в конец файла, чтобы GitHub видел изменения
         with open(file_path, 'a') as f:
-            f.write(f"\n# Last updated: {datetime.now().isoformat()}\n")
+            updated_time = datetime.now().isoformat()
+            f.write(f"\n# Last updated: {updated_time}\n")
+            print(f"Метка времени обновлена: {updated_time}")
 
         print("Данные успешно экспортированы в", file_path)
     else:

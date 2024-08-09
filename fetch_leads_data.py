@@ -71,7 +71,7 @@ def fetch_leads_data():
                     'Название рекламы': lead['ad_name'],
                     'ID кампании': lead['campaign_id'],
                     'Название кампании': lead['campaign_name'],
-                    'Название формы': lead.get('form_name', 'Unknown'),  # Проверка наличия ключа form_name
+                    'Название формы': lead.get('form_name', 'Unknown'),
                     'Платформа': lead.get('platform', 'Unknown'),
                     'Полное имя': lead.get('full_name', ''),
                     'Номер телефона': lead.get('phone_number', '')
@@ -80,7 +80,7 @@ def fetch_leads_data():
     if all_leads:
         print(f"Запись {len(all_leads)} записей в файл")
         keys = all_leads[0].keys()
-        file_path = 'facebook_leads_data.csv'
+        file_path = 'facebook_ads_leads_data.csv'  # Имя итогового файла
 
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)

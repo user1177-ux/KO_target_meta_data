@@ -16,31 +16,32 @@ def fetch_leads_data():
     end_date_str = end_date.strftime('%Y-%m-%d')
     start_date = '2024-06-01'  # Начальная дата
 
-    # Получаем список форм лидов
-    url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/leadgen_forms'
+    # Получаем список кампаний
+    url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
     params = {
         'access_token': access_token,
+        'fields': 'id,name'
     }
 
     response = requests.get(url, params=params)
-    forms = response.json()
+    campaigns = response.json()
 
-    if 'error' in forms:
-        print(f"Ошибка в ответе API: {forms['error']}")
+    if 'error' in campaigns:
+        print(f"Ошибка в ответе API: {campaigns['error']}")
         return
 
-    if 'data' not in forms:
+    if 'data' not in campaigns:
         print("Ответ API не содержит ключ 'data'")
         return
 
     all_leads = []
 
-    for form in forms['data']:
-        form_id = form['id']
-        form_name = form['name']
+    for campaign in campaigns['data']:
+        campaign_id = campaign['id']
+        campaign_name = campaign['name']
 
-        # Получаем данные по лидам для каждой формы
-        lead_url = f'https://graph.facebook.com/v20.0/{form_id}/leads'
+        # Получаем данные по лидам для каждой кампании
+        lead_url = f'https://graph.facebook.com/v20.0/{campaign_id}/leads'
         lead_params = {
             'access_token': access_token,
             'fields': 'id,created_time,ad_id,ad_name,campaign_id,campaign_name,form_name,platform,full_name,phone_number',
@@ -58,10 +59,10 @@ def fetch_leads_data():
             continue
 
         if 'data' not in leads_data:
-            print(f"Ответ API не содержит ключ 'data' для формы {form_name}")
+            print(f"Ответ API не содержит ключ 'data' для кампании {campaign_name}")
             continue
 
-        print(f"Форма: {form_name}, Количество лидов: {len(leads_data['data'])}")
+        print(f"Кампания: {campaign_name}, Количество лидов: {len(leads_data['data'])}")
 
         for lead in leads_data['data']:
             all_leads.append({
@@ -71,7 +72,7 @@ def fetch_leads_data():
                 'Название рекламы': lead['ad_name'],
                 'ID кампании': lead['campaign_id'],
                 'Название кампании': lead['campaign_name'],
-                'Название формы': form_name,
+                'Название формы': lead['form_name'],
                 'Платформа': lead['platform'],
                 'Полное имя': lead.get('full_name', ''),
                 'Номер телефона': lead.get('phone_number', '')
@@ -81,9 +82,6 @@ def fetch_leads_data():
         print(f"Запись {len(all_leads)} записей в файл")
         keys = all_leads[0].keys()
         file_path = 'facebook_leads_data.csv'
-
-        # Проверка перед записью файла
-        print("Начинаю запись файла...")
 
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)

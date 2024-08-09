@@ -22,6 +22,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install requests
+        pip install pandas  # Установка pandas
 
     - name: Run data fetch script for last year
       run: python fetch_data_1_year.py

@@ -71,8 +71,8 @@ def fetch_leads_data():
                     'Название рекламы': lead['ad_name'],
                     'ID кампании': lead['campaign_id'],
                     'Название кампании': lead['campaign_name'],
-                    'Название формы': lead['form_name'],
-                    'Платформа': lead['platform'],
+                    'Название формы': lead.get('form_name', 'Unknown'),  # Проверка наличия ключа form_name
+                    'Платформа': lead.get('platform', 'Unknown'),
                     'Полное имя': lead.get('full_name', ''),
                     'Номер телефона': lead.get('phone_number', '')
                 })

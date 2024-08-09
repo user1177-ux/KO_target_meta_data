@@ -1,10 +1,9 @@
 import requests
 import csv
 import os
-import json
 from datetime import datetime, timedelta
 
-def fetch_leads_data():
+def fetch_lead_data():
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
@@ -17,66 +16,73 @@ def fetch_leads_data():
     end_date_str = end_date.strftime('%Y-%m-%d')
     start_date = '2024-06-01'  # Начальная дата
 
-    url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/ads'
-    params = {'access_token': access_token}
+    # Получаем список форм лидов
+    url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/leadgen_forms'
+    params = {
+        'access_token': access_token,
+    }
 
     response = requests.get(url, params=params)
-    data = response.json()
+    forms = response.json()
 
-    if 'error' in data:
-        print(f"Ошибка в ответе API: {data['error']}")
+    if 'error' in forms:
+        print(f"Ошибка в ответе API: {forms['error']}")
         return
 
-    if 'data' not in data:
+    if 'data' not in forms:
         print("Ответ API не содержит ключ 'data'")
-        print("Полный ответ:", data)
         return
 
-    print(f"Получено {len(data['data'])} объявлений")
+    all_leads = []
 
-    result = []
-    for ad in data['data']:
-        insights_url = f'https://graph.facebook.com/v20.0/{ad["id"]}/insights'
-        insights_params = {
-            'fields': 'ad_name,ad_id,reach,frequency,spend,actions',
+    for form in forms['data']:
+        form_id = form['id']
+        form_name = form['name']
+
+        # Получаем данные по лидам для каждой формы
+        lead_url = f'https://graph.facebook.com/v20.0/{form_id}/leads'
+        lead_params = {
             'access_token': access_token,
-            'time_range': json.dumps({'since': start_date, 'until': end_date_str}),
+            'fields': 'id,created_time,ad_id,ad_name,campaign_id,campaign_name,form_name,platform,full_name,phone_number',
+            'filtering': [
+                {'field': 'created_time', 'operator': 'GREATER_THAN_OR_EQUAL', 'value': start_date},
+                {'field': 'created_time', 'operator': 'LESS_THAN_OR_EQUAL', 'value': end_date_str}
+            ]
         }
-        response = requests.get(insights_url, params=insights_params)
-        insights_data = response.json()
 
-        if 'error' in insights_data:
-            print(f"Ошибка в ответе API при запросе insights: {insights_data['error']}")
+        leads_response = requests.get(lead_url, params=lead_params)
+        leads_data = leads_response.json()
+
+        if 'error' in leads_data:
+            print(f"Ошибка в ответе API при запросе лидов: {leads_data['error']}")
             continue
 
-        if 'data' not in insights_data:
-            print("Ответ API на запрос insights не содержит ключ 'data'")
+        if 'data' not in leads_data:
+            print(f"Ответ API не содержит ключ 'data' для формы {form_name}")
             continue
 
-        for record in insights_data['data']:
-            lead_action = next((action for action in record.get('actions', []) if action['action_type'] == 'lead'), None)
-            lead_value = int(lead_action['value']) if lead_action else 0
-            spend = float(record['spend'])
-            reach = int(record['reach'])
-            frequency = float(record['frequency'])
-            ad_name = record['ad_name']
-
-            result.append({
-                'Реклама': ad_name,
-                'Результат': lead_value,
-                'Охват': reach,
-                'Частота': frequency,
-                'Цена за результат': f"{spend}".replace('.', ',')
+        for lead in leads_data['data']:
+            all_leads.append({
+                'id': lead['id'],
+                'created_time': lead['created_time'],
+                'ad_id': lead['ad_id'],
+                'ad_name': lead['ad_name'],
+                'campaign_id': lead['campaign_id'],
+                'campaign_name': lead['campaign_name'],
+                'form_name': form_name,
+                'platform': lead['platform'],
+                'full_name': lead.get('full_name', ''),
+                'phone_number': lead.get('phone_number', '')
             })
 
-    if result:
-        print(f"Запись {len(result)} записей в файл")
-        keys = result[0].keys()
-        file_path = 'facebook_ads_leads_data.csv'
+    if all_leads:
+        print(f"Запись {len(all_leads)} записей в файл")
+        keys = all_leads[0].keys()
+        file_path = 'facebook_leads_data.csv'
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()
-            dict_writer.writerows(result)
+            dict_writer.writerows(all_leads)
 
         # Добавляем метку времени в конец файла, чтобы GitHub видел изменения
         with open(file_path, 'a') as f:
@@ -87,4 +93,4 @@ def fetch_leads_data():
         print("Нет данных для экспорта")
 
 if __name__ == "__main__":
-    fetch_leads_data()
+    fetch_lead_data()

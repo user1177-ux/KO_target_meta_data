@@ -16,32 +16,32 @@ def fetch_leads_data():
     end_date_str = end_date.strftime('%Y-%m-%d')
     start_date = '2024-06-01'  # Начальная дата
 
-    # Получаем список кампаний
-    url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/campaigns'
+    # Получаем список объявлений
+    url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/ads'
     params = {
         'access_token': access_token,
         'fields': 'id,name'
     }
 
     response = requests.get(url, params=params)
-    campaigns = response.json()
+    ads = response.json()
 
-    if 'error' in campaigns:
-        print(f"Ошибка в ответе API: {campaigns['error']}")
+    if 'error' in ads:
+        print(f"Ошибка в ответе API: {ads['error']}")
         return
 
-    if 'data' not in campaigns:
+    if 'data' not in ads:
         print("Ответ API не содержит ключ 'data'")
         return
 
     all_leads = []
 
-    for campaign in campaigns['data']:
-        campaign_id = campaign['id']
-        campaign_name = campaign['name']
+    for ad in ads['data']:
+        ad_id = ad['id']
+        ad_name = ad['name']
 
-        # Получаем данные по лидам для каждой кампании
-        lead_url = f'https://graph.facebook.com/v20.0/{campaign_id}/leads'
+        # Получаем данные по лидам для каждого объявления
+        lead_url = f'https://graph.facebook.com/v20.0/{ad_id}/leads'
         lead_params = {
             'access_token': access_token,
             'fields': 'id,created_time,ad_id,ad_name,campaign_id,campaign_name,form_name,platform,full_name,phone_number'
@@ -55,10 +55,10 @@ def fetch_leads_data():
             continue
 
         if 'data' not in leads_data:
-            print(f"Ответ API не содержит ключ 'data' для кампании {campaign_name}")
+            print(f"Ответ API не содержит ключ 'data' для объявления {ad_name}")
             continue
 
-        print(f"Кампания: {campaign_name}, Количество лидов: {len(leads_data['data'])}")
+        print(f"Объявление: {ad_name}, Количество лидов: {len(leads_data['data'])}")
 
         for lead in leads_data['data']:
             # Проверка, попадает ли лид в нужный диапазон дат

@@ -2,6 +2,7 @@ import requests
 import csv
 import os
 from datetime import datetime, timedelta
+import pandas as pd
 
 def fetch_leads_data():
     access_token = os.getenv('ACCESS_TOKEN')
@@ -73,8 +74,8 @@ def fetch_leads_data():
                     'Название кампании': lead['campaign_name'],
                     'Название формы': lead.get('form_name', 'Unknown'),
                     'Платформа': lead.get('platform', 'Unknown'),
-                    'Полное имя': lead.get('full_name', ''),
-                    'Номер телефона': lead.get('phone_number', '')
+                    'Полное имя': lead.get('full_name', 'No name available'),
+                    'Номер телефона': lead.get('phone_number', 'No phone available')
                 })
 
     if all_leads:
@@ -82,10 +83,13 @@ def fetch_leads_data():
         keys = all_leads[0].keys()
         file_path = 'facebook_ads_leads_data.csv'  # Имя итогового файла
 
-        with open(file_path, 'w', newline='') as output_file:
-            dict_writer = csv.DictWriter(output_file, fieldnames=keys)
-            dict_writer.writeheader()
-            dict_writer.writerows(all_leads)
+        # Используем pandas для записи в CSV и отображения таблицы
+        df = pd.DataFrame(all_leads)
+        df.to_csv(file_path, index=False)
+
+        # Отобразим итоговые данные в виде таблицы
+        print("\nИтоговые данные в виде таблицы:\n")
+        print(df)
 
         # Добавляем метку времени в конец файла, чтобы GitHub видел изменения
         with open(file_path, 'a') as f:

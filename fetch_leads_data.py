@@ -3,7 +3,7 @@ import csv
 import os
 from datetime import datetime, timedelta
 
-def fetch_lead_data():
+def fetch_leads_data():
     access_token = os.getenv('ACCESS_TOKEN')
     ad_account_id = os.getenv('AD_ACCOUNT_ID')
 
@@ -63,16 +63,16 @@ def fetch_lead_data():
 
         for lead in leads_data['data']:
             all_leads.append({
-                'id': lead['id'],
-                'created_time': lead['created_time'],
-                'ad_id': lead['ad_id'],
-                'ad_name': lead['ad_name'],
-                'campaign_id': lead['campaign_id'],
-                'campaign_name': lead['campaign_name'],
-                'form_name': form_name,
-                'platform': lead['platform'],
-                'full_name': lead.get('full_name', ''),
-                'phone_number': lead.get('phone_number', '')
+                'ID': lead['id'],
+                'Время создания': lead['created_time'],
+                'ID рекламы': lead['ad_id'],
+                'Название рекламы': lead['ad_name'],
+                'ID кампании': lead['campaign_id'],
+                'Название кампании': lead['campaign_name'],
+                'Название формы': form_name,
+                'Платформа': lead['platform'],
+                'Полное имя': lead.get('full_name', ''),
+                'Номер телефона': lead.get('phone_number', '')
             })
 
     if all_leads:
@@ -93,4 +93,4 @@ def fetch_lead_data():
         print("Нет данных для экспорта")
 
 if __name__ == "__main__":
-    fetch_lead_data()
+    fetch_leads_data()

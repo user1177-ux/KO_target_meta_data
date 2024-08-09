@@ -61,6 +61,8 @@ def fetch_leads_data():
             print(f"Ответ API не содержит ключ 'data' для формы {form_name}")
             continue
 
+        print(f"Форма: {form_name}, Количество лидов: {len(leads_data['data'])}")
+
         for lead in leads_data['data']:
             all_leads.append({
                 'ID': lead['id'],

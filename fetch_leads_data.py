@@ -44,11 +44,7 @@ def fetch_leads_data():
         lead_url = f'https://graph.facebook.com/v20.0/{campaign_id}/leads'
         lead_params = {
             'access_token': access_token,
-            'fields': 'id,created_time,ad_id,ad_name,campaign_id,campaign_name,form_name,platform,full_name,phone_number',
-            'filtering': [
-                {'field': 'created_time', 'operator': 'GREATER_THAN_OR_EQUAL', 'value': start_date},
-                {'field': 'created_time', 'operator': 'LESS_THAN_OR_EQUAL', 'value': end_date_str}
-            ]
+            'fields': 'id,created_time,ad_id,ad_name,campaign_id,campaign_name,form_name,platform,full_name,phone_number'
         }
 
         leads_response = requests.get(lead_url, params=lead_params)
@@ -65,18 +61,21 @@ def fetch_leads_data():
         print(f"Кампания: {campaign_name}, Количество лидов: {len(leads_data['data'])}")
 
         for lead in leads_data['data']:
-            all_leads.append({
-                'ID': lead['id'],
-                'Время создания': lead['created_time'],
-                'ID рекламы': lead['ad_id'],
-                'Название рекламы': lead['ad_name'],
-                'ID кампании': lead['campaign_id'],
-                'Название кампании': lead['campaign_name'],
-                'Название формы': lead['form_name'],
-                'Платформа': lead['platform'],
-                'Полное имя': lead.get('full_name', ''),
-                'Номер телефона': lead.get('phone_number', '')
-            })
+            # Проверка, попадает ли лид в нужный диапазон дат
+            lead_date = lead['created_time'][:10]
+            if start_date <= lead_date <= end_date_str:
+                all_leads.append({
+                    'ID': lead['id'],
+                    'Время создания': lead['created_time'],
+                    'ID рекламы': lead['ad_id'],
+                    'Название рекламы': lead['ad_name'],
+                    'ID кампании': lead['campaign_id'],
+                    'Название кампании': lead['campaign_name'],
+                    'Название формы': lead['form_name'],
+                    'Платформа': lead['platform'],
+                    'Полное имя': lead.get('full_name', ''),
+                    'Номер телефона': lead.get('phone_number', '')
+                })
 
     if all_leads:
         print(f"Запись {len(all_leads)} записей в файл")

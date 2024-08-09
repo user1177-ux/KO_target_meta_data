@@ -51,6 +51,8 @@ def fetch_leads_data():
         leads_response = requests.get(lead_url, params=lead_params)
         leads_data = leads_response.json()
 
+        print(leads_response.json())  # Выводит полный ответ JSON
+
         if 'error' in leads_data:
             print(f"Ошибка в ответе API при запросе лидов: {leads_data['error']}")
             continue

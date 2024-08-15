@@ -64,13 +64,13 @@ def fetch_data():
                 clicks = int(record['clicks'])
                 campaign_name = record['campaign_name']
                 if 'русский' in campaign_name.lower():
-                    language = 'RU'
+                    campaign = 'RU'
                 elif 'английский' in campaign_name.lower():
-                    language = 'EN'
+                    campaign = 'EN'
                 elif 'словенский' in campaign_name.lower():
-                    language = 'SLO'
+                    campaign = 'SLO'
                 else:
-                    language = 'UNKNOWN'
+                    campaign = record['campaign_name']
                 
                 result.append({
                     'Дата': record['date_start'],
@@ -79,7 +79,7 @@ def fetch_data():
                     'Показы': impressions,
                     'Бюджет': f"{spend}".replace('.', ','),
                     'Заявки': lead_value,
-                    'Кампания': language,
+                    'Кампания': campaign,
                 })
 
             next_page_url = insight_data.get('paging', {}).get('next')

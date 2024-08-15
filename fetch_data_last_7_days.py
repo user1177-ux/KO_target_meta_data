@@ -54,15 +54,15 @@ def fetch_data():
             spend = float(record['spend'])
             impressions = int(record['impressions'])
             clicks = int(record['clicks'])
-                campaign_name = record['campaign_name']
-                if 'русский' in campaign_name.lower():
-                    campaign = 'RU'
-                elif 'английский' in campaign_name.lower():
-                    campaign = 'EN'
-                elif 'словенский' in campaign_name.lower():
-                    campaign = 'SLO'
-                else:
-                    campaign = record['campaign_name']
+            campaign_name = record['campaign_name']
+            if 'русский' in campaign_name.lower():
+                campaign = 'RU'
+            elif 'английский' in campaign_name.lower():
+                campaign = 'EN'
+            elif 'словенский' in campaign_name.lower():
+                campaign = 'SLO'
+            else:
+                campaign = record['campaign_name']
             
             result.append({
                 'Дата': record['date_start'],

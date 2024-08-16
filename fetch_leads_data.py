@@ -80,11 +80,10 @@ def fetch_leads_data():
                     'Номер телефона': lead.get('phone_number', 'No phone available')
                 })
 
+    file_path = 'facebook_ads_leads_data.csv'  # Имя итогового файла
+
     if all_leads:
         print(f"Запись {len(all_leads)} записей в файл")
-        keys = all_leads[0].keys()
-        file_path = 'facebook_ads_leads_data.csv'  # Имя итогового файла
-
         # Используем pandas для записи в CSV и отображения таблицы
         df = pd.DataFrame(all_leads)
         df.to_csv(file_path, index=False)
@@ -92,16 +91,16 @@ def fetch_leads_data():
         # Отобразим итоговые данные в виде таблицы
         print("\nИтоговые данные в виде таблицы:\n")
         print(df)
-
-        # Добавляем метку времени в конец файла, чтобы GitHub видел изменения
-        with open(file_path, 'a') as f:
-            updated_time = datetime.now().isoformat()
-            f.write(f"\n# Last updated: {updated_time}\n")
-            print(f"Метка времени обновлена: {updated_time}")
-
-        print("Данные успешно экспортированы в", file_path)
     else:
         print("Нет данных для экспорта")
+
+    # Добавляем метку времени в конец файла, чтобы GitHub видел изменения
+    with open(file_path, 'a') as f:
+        updated_time = datetime.now().isoformat()
+        f.write(f"\n# Last updated: {updated_time}\n")
+        print(f"Метка времени обновлена: {updated_time}")
+
+    print("Данные успешно экспортированы в", file_path)
 
 if __name__ == "__main__":
     fetch_leads_data()

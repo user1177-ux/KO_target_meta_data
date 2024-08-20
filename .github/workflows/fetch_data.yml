@@ -36,10 +36,6 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
 
-      env:
-        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-        AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
-
     - name: Check if CSV files exist
       run: |
         ls -l facebook_ads_data_leads_1_year.csv

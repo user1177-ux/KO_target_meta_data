@@ -36,8 +36,6 @@ jobs:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
 
-    - name: Run lead data fetch script
-      run: python fetch_leads_data.py
       env:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         AD_ACCOUNT_ID: ${{ secrets.AD_ACCOUNT_ID }}
@@ -46,7 +44,6 @@ jobs:
       run: |
         ls -l facebook_ads_data_leads_1_year.csv
         ls -l facebook_ads_data_leads_7_days.csv
-        ls -l facebook_ads_leads_data.csv
 
     - name: Commit and push changes
       run: |
@@ -54,7 +51,6 @@ jobs:
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
         git add facebook_ads_data_leads_1_year.csv
         git add facebook_ads_data_leads_7_days.csv
-        git add facebook_ads_leads_data.csv
         git commit -m 'Updated data'
         git push
       env:

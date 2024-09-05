@@ -39,7 +39,7 @@ def fetch_data():
         next_page_url = f'https://graph.facebook.com/v20.0/{campaign["id"]}/insights'
         while next_page_url:
             insight_params = {
-                'fields': 'campaign_name,campaign_id,clicks,reach,impressions,actions,date_start,spend',
+                'fields': 'campaign_name,campaign_id,adset_name,clicks,reach,impressions,actions,date_start,spend',
                 'access_token': access_token,
                 'time_range': json.dumps({'since': start_date, 'until': end_date_str}),
                 'time_increment': '1'
@@ -63,15 +63,17 @@ def fetch_data():
                 impressions = int(record['impressions'])
                 clicks = int(record['clicks'])
                 campaign_name = record['campaign_name']
+                adset_name = record.get('adset_name', 'Unknown')  # Добавление названия группы объявлений
+
                 if 'русский' in campaign_name.lower():
                     campaign = 'RU'
-                elif 'английский' in campaign_name.lower():
+                elif 'английский' в campaign_name.lower():
                     campaign = 'EN'
-                elif 'словенский' in campaign_name.lower():
+                elif 'словенский' в campaign_name.lower():
                     campaign = 'SLO'
                 else:
-                    campaign = record['campaign_name']
-                
+                    campaign = campaign_name
+
                 result.append({
                     'Дата': record['date_start'],
                     'Клики': clicks,
@@ -80,6 +82,7 @@ def fetch_data():
                     'Бюджет': f"{spend}".replace('.', ','),
                     'Заявки': lead_value,
                     'Кампания': campaign,
+                    'Группа объявлений': adset_name  # Добавление группы объявлений
                 })
 
             next_page_url = insight_data.get('paging', {}).get('next')

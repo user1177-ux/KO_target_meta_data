@@ -21,7 +21,7 @@ def fetch_data():
     url = f'https://graph.facebook.com/v20.0/act_{ad_account_id}/adsets'
     params = {
         'access_token': access_token,
-        'fields': 'id,name',
+        'fields': 'id,name,campaign_id',
         'time_range': json.dumps({'since': start_date, 'until': end_date_str}),
         'limit': 100
     }
@@ -41,7 +41,29 @@ def fetch_data():
     print(f"Получено {len(data['data'])} групп объявлений")
 
     result = []
+    campaign_cache = {}
+
     for adset in data['data']:
+        # Получение названия кампании для каждой группы объявлений (если нет в кэше)
+        campaign_id = adset['campaign_id']
+        if campaign_id not in campaign_cache:
+            campaign_url = f'https://graph.facebook.com/v20.0/{campaign_id}'
+            campaign_params = {
+                'fields': 'name',
+                'access_token': access_token
+            }
+            campaign_response = requests.get(campaign_url, params=campaign_params)
+            campaign_data = campaign_response.json()
+
+            if 'error' in campaign_data:
+                print(f"Ошибка в ответе API при запросе кампании: {campaign_data['error']}")
+                continue
+
+            campaign_cache[campaign_id] = campaign_data.get('name', 'Unknown Campaign')
+
+        campaign_name = campaign_cache[campaign_id]
+
+        # Получение данных по группе объявлений (adset)
         next_page_url = f'https://graph.facebook.com/v20.0/{adset["id"]}/insights'
         while next_page_url:
             insight_params = {
@@ -68,7 +90,7 @@ def fetch_data():
                 spend = float(record['spend'])
                 impressions = int(record['impressions'])
                 clicks = int(record['clicks'])
-                adset_name = record.get('adset_name', 'Unknown')  # Добавление названия группы объявлений
+                adset_name = record.get('adset_name', 'Unknown')
 
                 result.append({
                     'Дата': record['date_start'],
@@ -77,7 +99,8 @@ def fetch_data():
                     'Показы': impressions,
                     'Бюджет': f"{spend}".replace('.', ','),
                     'Заявки': lead_value,
-                    'Группа объявлений': adset_name  # Использование названия группы объявлений
+                    'Кампания': campaign_name,  # Название кампании
+                    'Группа объявлений': adset_name  # Название группы объявлений
                 })
 
             next_page_url = insight_data.get('paging', {}).get('next')
@@ -85,7 +108,7 @@ def fetch_data():
     if result:
         print(f"Запись {len(result)} записей в файл")
         keys = result[0].keys()
-        file_path = 'facebook_adsets_data.csv'
+        file_path = 'facebook_adsets_data_with_campaigns.csv'
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()

@@ -67,9 +67,9 @@ def fetch_data():
 
                 if 'русский' in campaign_name.lower():
                     campaign = 'RU'
-                elif 'английский' в campaign_name.lower():
+                elif 'английский' in campaign_name.lower():
                     campaign = 'EN'
-                elif 'словенский' в campaign_name.lower():
+                elif 'словенский' in campaign_name.lower():
                     campaign = 'SLO'
                 else:
                     campaign = campaign_name

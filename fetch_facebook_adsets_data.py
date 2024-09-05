@@ -108,7 +108,7 @@ def fetch_data():
     if result:
         print(f"Запись {len(result)} записей в файл")
         keys = result[0].keys()
-        file_path = 'facebook_adsets_data_with_campaigns.csv'
+        file_path = 'facebook_adsets_data.csv'
         with open(file_path, 'w', newline='') as output_file:
             dict_writer = csv.DictWriter(output_file, fieldnames=keys)
             dict_writer.writeheader()
